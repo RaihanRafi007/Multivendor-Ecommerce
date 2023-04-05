@@ -1,0 +1,108 @@
+const AllProducts = () => {
+  const baseUrl = 'http://127.0.0.1:8000/api';
+  const [products, setProducts] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetchData(baseUrl + '/products?page=1');
+  }, [baseUrl]);
+
+  function fetchData(url) {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data.results);
+        setTotalPages(Math.ceil(data.count / data.results.length));
+      });
+  }
+
+  function handlePageClick(pageNum) {
+    setCurrentPage(pageNum);
+    fetchData(baseUrl + `/products?page=${pageNum}`);
+  }
+
+  const pageItems = [];
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    pageItems.push(
+      <Pagination.Item
+        key={pageNum}
+        active={pageNum === currentPage}
+        onClick={() => handlePageClick(pageNum)}
+      >
+        {pageNum}
+      </Pagination.Item>
+    );
+  }
+
+  return (
+    <Layout>
+      <Container>
+        <h3 className="mb-4 ">All Products</h3>
+        <Row className="mb-4">
+          {products.map((product) => (
+            <SingleProduct key={product.id} product={product} />
+          ))}
+        </Row>
+        <Pagination>{pageItems}</Pagination>
+      </Container>
+    </Layout>
+  );
+};
+
+
+
+const AllProducts = () => {
+    const baseUrl = "http://127.0.0.1:8000/api";
+    const [products, setProducts] = useState([]);
+    const [totalResult, setTotalResults] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+  
+    useEffect(() => {
+      fetchData(`${baseUrl}/products/?page=${currentPage}`);
+    }, [baseUrl, currentPage]);
+  
+    function fetchData(url) {
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          setProducts(data.results);
+          setTotalResults(data.count);
+        });
+    }
+  
+    function handlePageChange(pageNumber) {
+      setCurrentPage(pageNumber);
+    }
+  
+    const pageItems = [];
+    for (let i = 1; i <= Math.ceil(totalResult / 2); i++) {
+      pageItems.push(
+        <Pagination.Item
+          key={i}
+          active={i === currentPage}
+          onClick={() => handlePageChange(i)}
+          as={Link}
+          to={`/products/?page=${i}`}
+        >
+          {i}
+        </Pagination.Item>
+      );
+    }
+  
+    return (
+      <Layout>
+        <Container>
+          <h3 className="mb-4 ">All Products</h3>
+          <Row className="mb-4">
+            {products.map((product) => (
+              <Col md={4} key={product.id}>
+                <SingleProduct product={product} />
+              </Col>
+            ))}
+          </Row>
+          <Pagination>{pageItems}</Pagination>
+        </Container>
+      </Layout>
+    );
+  };
